@@ -16,104 +16,111 @@ describe('BackendService', () => {
   });
 
   afterEach(() => {
-    // Ensure that there are no pending requests after each test
     httpMock.verify();
   });
 
-  describe('Player Endpoints', () => {
-    const mockPlayer = {
-      email: 'test@example.com',
-      password_digest: 'hashed_password',
-      avatar: 'avatar_url'
-    };
+  describe('Player Session Endpoints', () => {
+    const mockSession = { player_id: 1, stage_id: 1, lives: 3 };
+    const mockPlayerId = 1;
+    const mockSessionId = 1;
 
-    const mockPlayers = [
-      { id: 1, email: 'player1@example.com', password_digest: 'hashed_password1', avatar: 'avatar_url1' },
-      { id: 2, email: 'player2@example.com', password_digest: 'hashed_password2', avatar: 'avatar_url2' }
-    ];
-
-    it('should fetch one player by ID', () => {
-      service.getPlayerById(1).subscribe(player => {
-        expect(player.id).toBe(1);
-        expect(player.email).toBe('player1@example.com');
+    it('should create a player session', () => {
+      service.createPlayerSession(mockSession).subscribe(session => {
+        expect(session.player_id).toBe(1);
+        expect(session.lives).toBe(3);
       });
 
-      const req = httpMock.expectOne('http://localhost:4040/players/1');
-      expect(req.request.method).toBe('GET');
-      req.flush(mockPlayers[0]);
-    });
-
-    it('should fetch all players', () => {
-      service.getAllPlayers().subscribe(players => {
-        expect(players.length).toBe(2);
-        expect(players[0].email).toBe('player1@example.com');
-      });
-
-      const req = httpMock.expectOne('http://localhost:4040/players');
-      expect(req.request.method).toBe('GET');
-      req.flush(mockPlayers);
-    });
-
-    it('should create a new player', () => {
-      service.createPlayer(mockPlayer).subscribe(player => {
-        expect(player.email).toBe('test@example.com');
-        expect(player.password_digest).toBe('hashed_password');
-      });
-
-      const req = httpMock.expectOne('http://localhost:4040/players');
+      const req = httpMock.expectOne(`http://localhost:4040/players/${mockPlayerId}/player_sessions`);
       expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual(mockPlayer);
-      req.flush(mockPlayer);
+      req.flush(mockSession);
     });
 
-    it('should update a player', () => {
-      const updatedPlayer = { ...mockPlayer, email: 'updated@example.com' };
-
-      service.updatePlayer(1, updatedPlayer).subscribe(player => {
-        expect(player.email).toBe('updated@example.com');
+    it('should fetch a player session by ID', () => {
+      service.getPlayerSessionById(mockPlayerId, mockSessionId).subscribe(session => {
+        expect(session.player_id).toBe(1);
+        expect(session.lives).toBe(3);
       });
 
-      const req = httpMock.expectOne('http://localhost:4040/players/1');
+      const req = httpMock.expectOne(`http://localhost:4040/players/${mockPlayerId}/player_sessions/${mockSessionId}`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockSession);
+    });
+
+    it('should update a player session', () => {
+      const updatedSession = { lives: 2 };
+
+      service.updatePlayerSession(mockPlayerId, mockSessionId, updatedSession).subscribe(session => {
+        expect(session.lives).toBe(2);
+      });
+
+      const req = httpMock.expectOne(`http://localhost:4040/players/${mockPlayerId}/player_sessions/${mockSessionId}`);
       expect(req.request.method).toBe('PATCH');
-      expect(req.request.body).toEqual(updatedPlayer);
-      req.flush(updatedPlayer);
+      req.flush(updatedSession);
+    });
+
+    it('should delete a player session', () => {
+      service.deletePlayerSession(mockPlayerId, mockSessionId).subscribe(response => {
+        expect(response).toBeNull();
+      });
+
+      const req = httpMock.expectOne(`http://localhost:4040/players/${mockPlayerId}/player_sessions/${mockSessionId}`);
+      expect(req.request.method).toBe('DELETE');
+      req.flush(null);
     });
   });
 
-  describe('Stage Endpoints', () => {
-  
-    // Test for getting all stages
-    it('should fetch all stages', () => {
-      const mockStages = [
-        { id: 1, title: 'Stage 1', background_img: 'bg1.jpg', difficulty: 1 },
-        { id: 2, title: 'Stage 2', background_img: 'bg2.jpg', difficulty: 2 },
-      ];
-  
-      service.getAllStages().subscribe(stages => {
-        expect(stages.length).toBe(2);
-        expect(stages).toEqual(mockStages);
+  describe('Question Endpoints', () => {
+    const mockQuestion = { text: 'What is 2 + 2?' };
+    const mockPlayerId = 1;
+    const mockSessionId = 1;
+    const mockQuestionId = 1;
+
+    it('should create a question', () => {
+      service.createQuestion(mockPlayerId, mockSessionId, mockQuestion).subscribe(question => {
+        expect(question.text).toBe('What is 2 + 2?');
       });
-  
-      const req = httpMock.expectOne('http://localhost:4040/stages');
-      expect(req.request.method).toBe('GET');
-      req.flush(mockStages); // Mock the response with mockStages
+
+      const req = httpMock.expectOne(`http://localhost:4040/players/${mockPlayerId}/player_sessions/${mockSessionId}/questions`);
+      expect(req.request.method).toBe('POST');
+      req.flush(mockQuestion);
     });
-  
-    // Test for getting a stage by ID
-    it('should fetch stage by ID', () => {
-      const mockStage = { id: 1, title: 'Stage 1', background_img: 'bg1.jpg', difficulty: 1 };
-  
-      service.getStageById(1).subscribe(stage => {
-        expect(stage).toEqual(mockStage);
+
+    it('should fetch a question by ID', () => {
+      service.getQuestionById(mockPlayerId, mockSessionId, mockQuestionId).subscribe(question => {
+        expect(question.text).toBe('What is 2 + 2?');
       });
-  
-      const req = httpMock.expectOne('http://localhost:4040/stages/1');
+
+      const req = httpMock.expectOne(`http://localhost:4040/players/${mockPlayerId}/player_sessions/${mockSessionId}/questions/${mockQuestionId}`);
       expect(req.request.method).toBe('GET');
-      req.flush(mockStage); // Mock the response with mockStage
+      req.flush(mockQuestion);
     });
-  
-    afterEach(() => {
-      httpMock.verify(); // Ensure that no unmatched requests are made
+  });
+
+  describe('Answer Endpoints', () => {
+    const mockAnswer = { text: '4', correct: true };
+    const mockPlayerId = 1;
+    const mockSessionId = 1;
+    const mockAnswerId = 1;
+
+    it('should create an answer', () => {
+      service.createAnswer(mockPlayerId, mockSessionId, mockAnswer).subscribe(answer => {
+        expect(answer.text).toBe('4');
+        expect(answer.correct).toBe(true);
+      });
+
+      const req = httpMock.expectOne(`http://localhost:4040/players/${mockPlayerId}/player_sessions/${mockSessionId}/answers`);
+      expect(req.request.method).toBe('POST');
+      req.flush(mockAnswer);
+    });
+
+    it('should fetch an answer by ID', () => {
+      service.getAnswerById(mockPlayerId, mockSessionId, mockAnswerId).subscribe(answer => {
+        expect(answer.text).toBe('4');
+      });
+
+      const req = httpMock.expectOne(`http://localhost:4040/players/${mockPlayerId}/player_sessions/${mockSessionId}/answers/${mockAnswerId}`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockAnswer);
     });
   });
 });

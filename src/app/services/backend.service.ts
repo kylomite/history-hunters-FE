@@ -12,55 +12,71 @@ export class BackendService {
 
   // Players
 
-  // GET one player by ID
   getPlayerById(playerId: number): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}players/${playerId}`);
   }
 
-  // GET all players
   getAllPlayers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}players`);
   }
 
-  // POST one player
   createPlayer(player: { email: string; password_digest: string; avatar: string }): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}players`, player);
   }
 
-  // PATCH one player (update)
   updatePlayer(playerId: number, player: { email?: string; password_digest?: string; avatar?: string }): Observable<any> {
     return this.http.patch<any>(`${this.baseUrl}players/${playerId}`, player);
   }
 
   // Stages
 
-  // GET all stages
   getAllStages(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}stages`);
   }
 
-  // GET stage by ID
   getStageById(stageId: number): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}stages/${stageId}`);
   }
 
   // Player_Sessions
 
-  // GET one player_session
+  createPlayerSession(session: { player_id: number; stage_id: number; lives: number }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}players/${session.player_id}/player_sessions`, session);
+  }
 
-  // PATCH one player_session
+  getPlayerSessionById(playerId: number, sessionId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}players/${playerId}/player_sessions/${sessionId}`);
+  }
 
-  // DELETE one player_session
+  updatePlayerSession(playerId: number, sessionId: number, session: { lives?: number }): Observable<any> {
+    return this.http.patch<any>(`${this.baseUrl}players/${playerId}/player_sessions/${sessionId}`, session);
+  }
+
+  deletePlayerSession(playerId: number, sessionId: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}players/${playerId}/player_sessions/${sessionId}`);
+  }
 
   // Questions
 
-  // POST one question
+  createQuestion(playerId: number, sessionId: number, question: { text: string }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}players/${playerId}/player_sessions/${sessionId}/questions`, question);
+  }
 
-  // GET one question
+  getQuestionById(playerId: number, sessionId: number, questionId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}players/${playerId}/player_sessions/${sessionId}/questions/${questionId}`);
+  }
 
   // Answers
 
-  // POST one answer
+  createAnswer(playerId: number, sessionId: number, answer: { text: string; correct: boolean }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}players/${playerId}/player_sessions/${sessionId}/answers`, answer);
+  }
 
-  // GET all answers
+  getAllAnswers(playerId: number, sessionId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}players/${playerId}/player_sessions/${sessionId}/answers`);
+  }
+
+  getAnswerById(playerId: number, sessionId: number, answerId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}players/${playerId}/player_sessions/${sessionId}/answers/${answerId}`);
+  }
 }
