@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
 import { ApiService } from './api.service';
 
-// Define the types for the expected response structure
 interface Question {
   type: string;
   difficulty: string;
@@ -18,7 +17,7 @@ describe('ApiService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],  // Add this line to provide HttpClientTestingModule
+      imports: [HttpClientTestingModule],
       providers: [ApiService]
     });
     service = TestBed.inject(ApiService);
@@ -28,10 +27,8 @@ describe('ApiService', () => {
   // Test for easy questions
   it('should fetch easy questions and validate the structure', () => {
     service.getEasyQuestions().subscribe(response => {
-      // Validate that the response contains a 'results' array with 10 items
       expect(response.results.length).toBe(10);
 
-      // Validate that each question has the required structure
       response.results.forEach((question: Question) => {
         expect(question.type).toBeDefined();
         expect(question.difficulty).toBeDefined();
