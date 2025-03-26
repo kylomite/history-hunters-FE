@@ -1,0 +1,16 @@
+<div class="dashboard-container">
+    <h1>HEY {{ playerInfo?.email }}</h1>
+    <div *ngIf="playerInfo" class="header">
+        <button class="scoreboard-btn">Scoreboard</button>
+        <div class="score-info">Score: {{ playerInfo.score }}</div>
+    </div>
+
+    <div *ngIf="!playerInfo">
+      <p>Loading...</p>
+    </div>
+
+    <div class="center-content">
+        <!-- Pass playerInfo.score to StageSelectComponent -->
+        <app-stage-select [playerScore]="playerInfo.score"></app-stage-select>
+    </div>
+</div>

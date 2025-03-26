@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -6,26 +6,44 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BackendService {
-  private baseUrl = 'http://localhost:4040/'; // Update with your backend URL
+  private baseUrl = 'http://localhost:8080/'; // Your backend URL
 
-  constructor(private http: HttpClient) {}
+  private http!: HttpClient;  // <-- Lazy inject HttpClient to prevent circular DI
+
+  constructor(private injector: Injector) {}
+
+  // Lazy injection to avoid circular dependency
+  private get httpClient(): HttpClient {
+    if (!this.http) {
+      this.http = this.injector.get(HttpClient);
+    }
+    return this.http;
+  }
 
   // Players
-
   getPlayerById(playerId: number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}players/${playerId}`);
+    return this.httpClient.get<any>(`${this.baseUrl}players/${playerId}`);
   }
 
   getAllPlayers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}players`);
+    return this.httpClient.get<any[]>(`${this.baseUrl}players`);
   }
 
   createPlayer(player: { email: string; password_digest: string; avatar: string }): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}players`, player);
+    return this.httpClient.post<any>(`${this.baseUrl}players/`, player);
   }
 
   updatePlayer(playerId: number, player: { email?: string; password_digest?: string; avatar?: string }): Observable<any> {
-    return this.http.patch<any>(`${this.baseUrl}players/${playerId}`, player);
+    return this.httpClient.patch<any>(`${this.baseUrl}players/${playerId}`, player);
+  }
+
+  // Authentication
+  authenticatePlayer(email: string, password: string): Observable<any> {
+    const payload = { 
+      email, 
+      password_digest: password 
+    };
+    return this.httpClient.post<any>(`${this.baseUrl}players/authenticate`, payload);
   }
 
   // Stages

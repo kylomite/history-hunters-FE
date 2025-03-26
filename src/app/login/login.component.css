@@ -49,6 +49,7 @@
   
   button {
     padding: 10px 15px;
+    width: 100%;
     font-size: 16px;
     color: #fff;
     background-color: goldenrod;

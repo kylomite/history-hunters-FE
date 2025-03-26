@@ -1,0 +1,12 @@
+<div class="stage-container">
+    <div *ngFor="let stage of stages" class="stage-card">
+      <button [disabled]="!isStageAccessible(stage)" class="stage-btn">
+        <img 
+          [src]="'assets/stage_backgrounds/background' + stage.id + '.png'" 
+          [alt]="stage.title" 
+          class="stage-img"
+          [ngClass]="{'disabled-img': !isStageAccessible(stage)}" />
+      </button>
+      <h3>{{ stage.title }}</h3>
+    </div>
+  </div>

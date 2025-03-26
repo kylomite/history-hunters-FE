@@ -1,6 +1,8 @@
 <div class="login-container">
     <h2>Login</h2>
+    
     <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      
       <!-- Email Field -->
       <div class="form-group">
         <label for="email">Email:</label>
@@ -25,8 +27,12 @@
           placeholder="Enter your password" />
       </div>
   
-      <button type="submit" [disabled]="!loginForm.valid">Login</button>
-      <p>or</p>
-      <button type="submit"[disabled]="loginForm.valid">Signup</button>
+      <!-- Buttons -->
+      <div class="button-group">
+        <button type="submit" [disabled]="!loginForm.valid">Login</button>
+        <p>or</p>
+        <button type="button" [disabled]="loginForm.valid" (click)="onSignup()">Signup</button>
+      </div>
+  
     </form>
   </div>
